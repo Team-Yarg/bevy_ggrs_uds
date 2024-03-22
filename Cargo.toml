@@ -1,0 +1,14 @@
+[package]
+name = "bevy_ggrs_uds"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ctru-rs = { git = "https://github.com/rust3ds/ctru-rs" }
+
+[package.metadata.cargo-3ds]
+romfs_dir = "romfs"
+
+[patch.'https://github.com/rust3ds/ctru-rs']
+ctru-rs = { git = "https://github.com/Jhynjhiruu/ctru-rs", branch = "feature/uds" }
+ctru-sys = { git = "https://github.com/Jhynjhiruu/ctru-rs", branch = "feature/uds" }
