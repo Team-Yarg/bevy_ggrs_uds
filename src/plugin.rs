@@ -9,6 +9,17 @@ use crate::{
 pub struct UdsGgrsPlugin {
     create_uds: bool,
 }
+impl Default for UdsGgrsPlugin {
+    fn default() -> Self {
+        Self { create_uds: true }
+    }
+}
+
+impl UdsGgrsPlugin {
+    pub fn new(create_uds: bool) -> Self {
+        Self { create_uds }
+    }
+}
 
 impl Plugin for UdsGgrsPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {

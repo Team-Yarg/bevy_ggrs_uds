@@ -2,6 +2,8 @@ mod plugin;
 mod session;
 pub mod socket;
 
+use std::ops::{Deref, DerefMut};
+
 use bevy::ecs::system::Resource;
 use bevy_ggrs::ggrs::{PlayerHandle, PlayerType};
 use crossbeam::channel::{Receiver, Sender};
@@ -17,6 +19,19 @@ pub struct UdsPacket {
     pub channel: u8,
 }
 pub struct UdsInstance(pub Uds);
+
+impl Deref for UdsInstance {
+    type Target = Uds;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl DerefMut for UdsInstance {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
 
 #[derive(Resource, Default, Debug)]
 pub struct UdsSession {

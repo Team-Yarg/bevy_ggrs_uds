@@ -1,3 +1,5 @@
+use std::ffi::CStr;
+
 use bevy::{ecs::system::Resource, log::error};
 use bevy_ggrs::ggrs::NonBlockingSocket;
 use crossbeam::channel::{Receiver, Sender};
@@ -49,21 +51,21 @@ impl UdsSession {
         &mut self,
         uds: &mut Uds,
         comm_id: &CommID,
-        psk: &str,
+        psk: &CStr,
         channel: u8,
     ) -> ctru::Result<UdsSocket> {
-        uds.create_network(comm_id, None, None, psk.as_bytes(), channel)?;
+        uds.create_network(comm_id, None, None, psk.to_bytes_with_nul(), channel)?;
         Ok(self.create_socket(channel))
     }
     pub fn connect_to_network(
         &mut self,
         uds: &mut Uds,
         net: &NetworkScanInfo,
-        psk: &str,
+        psk: &CStr,
         conn_ty: ConnectionType,
         channel: u8,
     ) -> ctru::Result<UdsSocket> {
-        uds.connect_network(net, psk.as_bytes(), conn_ty, channel)?;
+        uds.connect_network(net, psk.to_bytes_with_nul(), conn_ty, channel)?;
         Ok(self.create_socket(channel))
     }
 }
