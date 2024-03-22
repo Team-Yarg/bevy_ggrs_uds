@@ -323,6 +323,7 @@ dependencies = [
 [[package]]
 name = "bevy_3ds"
 version = "0.1.0"
+source = "git+ssh://git@github.com/Team-Yarg/bevy_3ds.git#a67eb92eb8e0145990fe7c87f5f7be5eede38c1a"
 dependencies = [
  "bevy 0.12.1",
  "bevy_3ds_input",
@@ -341,6 +342,7 @@ dependencies = [
 [[package]]
 name = "bevy_3ds_input"
 version = "0.1.0"
+source = "git+ssh://git@github.com/Team-Yarg/bevy_3ds.git#a67eb92eb8e0145990fe7c87f5f7be5eede38c1a"
 dependencies = [
  "bevy 0.12.1",
  "ctru-rs",
@@ -3649,7 +3651,7 @@ dependencies = [
  "js-sys",
  "log",
  "naga",
- "parking_lot 0.11.2",
+ "parking_lot 0.12.1",
  "profiling",
  "raw-window-handle 0.5.2",
  "smallvec",
@@ -3674,7 +3676,7 @@ dependencies = [
  "codespan-reporting",
  "log",
  "naga",
- "parking_lot 0.11.2",
+ "parking_lot 0.12.1",
  "profiling",
  "raw-window-handle 0.5.2",
  "rustc-hash",
@@ -3712,7 +3714,7 @@ dependencies = [
  "metal",
  "naga",
  "objc",
- "parking_lot 0.11.2",
+ "parking_lot 0.12.1",
  "profiling",
  "range-alloc",
  "raw-window-handle 0.5.2",
