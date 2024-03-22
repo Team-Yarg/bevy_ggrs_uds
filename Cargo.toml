@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 ctru-rs = { git = "https://github.com/rust3ds/ctru-rs" }
+bevy = { version = "0.12.1", default-features = false }
+crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
 
 [package.metadata.cargo-3ds]
 romfs_dir = "romfs"
