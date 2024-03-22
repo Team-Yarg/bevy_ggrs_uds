@@ -88,8 +88,11 @@ fn main() {
             prev(info);
         }));
     }
+
+    let _romfs = ctru::services::romfs::RomFS::new().unwrap();
     let mut app = App::new();
     app.add_plugins(DefaultPlugins)
         .add_plugins(bevy_ggrs_uds::UdsGgrsPlugin::default())
         .add_systems(Update, handle_input);
+    app.run();
 }
