@@ -3,6 +3,7 @@ mod session;
 pub mod socket;
 
 use bevy::ecs::system::Resource;
+use bevy_ggrs::ggrs::{PlayerHandle, PlayerType};
 use crossbeam::channel::{Receiver, Sender};
 use ctru::services::uds::{NodeID, Uds};
 
@@ -22,4 +23,24 @@ pub struct UdsSession {
     channels: UdsChannels,
 }
 
-pub type UdsID = NodeID;
+impl UdsInstance {
+    /// Get all peers currently connected to the network
+    pub fn peers(&self) -> ctru::Result<Vec<(PlayerType<NodeID>, PlayerHandle)>> {
+        let status = self.0.get_connection_status()?;
+        let ps = (0..16)
+            .filter(|i| (status.node_bitmask() & (1 << i)) != 0) // connected check
+            .map(|i| {
+                let id = NodeID::Node(i + 1);
+                (
+                    if id == status.cur_node_id() {
+                        PlayerType::Local
+                    } else {
+                        PlayerType::Remote(id)
+                    },
+                    i as usize,
+                )
+            })
+            .collect();
+        Ok(ps)
+    }
+}

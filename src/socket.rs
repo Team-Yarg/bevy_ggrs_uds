@@ -1,6 +1,7 @@
-use bevy::ecs::system::Resource;
+use bevy::{ecs::system::Resource, log::error};
+use bevy_ggrs::ggrs::NonBlockingSocket;
 use crossbeam::channel::{Receiver, Sender};
-use ctru::services::uds::{ConnectionType, NetworkScanInfo, Uds};
+use ctru::services::uds::{ConnectionType, NetworkScanInfo, NodeID, Uds};
 
 use crate::{UdsInstance, UdsPacket, UdsSession};
 
@@ -64,5 +65,41 @@ impl UdsSession {
     ) -> ctru::Result<UdsSocket> {
         uds.connect_network(net, psk.as_bytes(), conn_ty, channel)?;
         Ok(self.create_socket(channel))
+    }
+}
+
+impl NonBlockingSocket<NodeID> for UdsSocket {
+    fn send_to(&mut self, msg: &bevy_ggrs::ggrs::Message, addr: &NodeID) {
+        let data = match bincode::serialize(msg) {
+            Ok(v) => v,
+            Err(e) => {
+                error!("failed to serialize message for uds addr {addr:?} {msg:?}: {e}");
+                return;
+            }
+        };
+        if let Err(e) = self.tx.try_send(UdsPacket {
+            data,
+            id: *addr,
+            channel: self.channel,
+        }) {
+            error!("failed to send uds socket message {e}");
+        }
+    }
+
+    fn receive_all_messages(&mut self) -> Vec<(NodeID, bevy_ggrs::ggrs::Message)> {
+        self.rx
+            .try_iter()
+            .filter_map(|UdsPacket { data, id, channel }| {
+                assert_eq!(
+                    channel, self.channel,
+                    "channel mismatch, this is likely a bug in bevy_ggrs_uds"
+                );
+                let Ok(msg) = bincode::deserialize(&data) else {
+                    error!("failed to deserialize uds message from {id:?}");
+                    return None;
+                };
+                Some((id, msg))
+            })
+            .collect()
     }
 }
