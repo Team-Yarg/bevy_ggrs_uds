@@ -1620,7 +1620,7 @@ checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
 [[package]]
 name = "ctru-rs"
 version = "0.7.1"
-source = "git+https://github.com/Jhynjhiruu/ctru-rs?branch=feature/uds#33a4b1ca0c30479dcb17a1de687835765bcdc25d"
+source = "git+https://github.com/rust3ds/ctru-rs#cd80a338fc343ced91dd431101d3883278a8d3fa"
 dependencies = [
  "bitflags 2.5.0",
  "cfg-if",
@@ -1631,12 +1631,13 @@ dependencies = [
  "pthread-3ds",
  "shim-3ds",
  "toml",
+ "widestring",
 ]
 
 [[package]]
 name = "ctru-sys"
 version = "0.5.0"
-source = "git+https://github.com/Jhynjhiruu/ctru-rs?branch=feature/uds#33a4b1ca0c30479dcb17a1de687835765bcdc25d"
+source = "git+https://github.com/rust3ds/ctru-rs#cd80a338fc343ced91dd431101d3883278a8d3fa"
 dependencies = [
  "bindgen",
  "cc",

@@ -16,7 +16,3 @@ bevy_3ds = { version = "0.1.0", git = "ssh://git@github.com/Team-Yarg/bevy_3ds.g
 
 [package.metadata.cargo-3ds]
 romfs_dir = "romfs"
-
-[patch.'https://github.com/rust3ds/ctru-rs']
-ctru-rs = { git = "https://github.com/Jhynjhiruu/ctru-rs", branch = "feature/uds" }
-ctru-sys = { git = "https://github.com/Jhynjhiruu/ctru-rs", branch = "feature/uds" }

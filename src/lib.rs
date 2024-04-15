@@ -41,7 +41,7 @@ pub struct UdsSession {
 impl UdsInstance {
     /// Get all peers currently connected to the network
     pub fn peers(&self) -> ctru::Result<Vec<(PlayerType<NodeID>, PlayerHandle)>> {
-        let status = self.0.get_connection_status()?;
+        let status = self.0.connection_status()?;
         let ps = (0..16)
             .filter(|i| (status.node_bitmask() & (1 << i)) != 0) // connected check
             .map(|i| {
