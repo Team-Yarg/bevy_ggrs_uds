@@ -14,7 +14,7 @@ use socket::UdsChannels;
 
 #[derive(Debug, Clone)]
 pub struct UdsPacket {
-    pub data: Vec<u8>,
+    pub data: Box<[u8]>,
     pub id: NodeID,
     pub channel: u8,
 }

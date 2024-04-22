@@ -5,13 +5,38 @@ use bevy_ggrs::ggrs::NonBlockingSocket;
 use crossbeam::channel::{Receiver, Sender};
 use ctru::services::uds::{ConnectionType, NetworkScanInfo, NodeID, Uds};
 
-use crate::{UdsInstance, UdsPacket, UdsSession};
+use crate::{UdsPacket, UdsSession};
 
 #[derive(Resource, Debug)]
 pub struct UdsSocket {
     tx: Sender<UdsPacket>,
     rx: Receiver<UdsPacket>,
     channel: u8,
+}
+
+impl UdsSocket {
+    pub fn send(&mut self, to: NodeID, data: Box<[u8]>) {
+        if let Err(e) = self.tx.try_send(UdsPacket {
+            data,
+            id: to,
+            channel: self.channel,
+        }) {
+            error!("failed to send uds socket message {e}");
+        }
+    }
+
+    pub fn recv(&mut self) -> Vec<(NodeID, Box<[u8]>)> {
+        self.rx
+            .try_iter()
+            .map(|UdsPacket { data, id, channel }| {
+                assert_eq!(
+                    channel, self.channel,
+                    "channel mismatch, this is likely a bug in bevy_ggrs_uds"
+                );
+                (id, data)
+            })
+            .collect()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -79,29 +104,13 @@ impl NonBlockingSocket<NodeID> for UdsSocket {
                 return;
             }
         };
-        if let Err(e) = self.tx.try_send(UdsPacket {
-            data,
-            id: *addr,
-            channel: self.channel,
-        }) {
-            error!("failed to send uds socket message {e}");
-        }
+        self.send(*addr, data.into());
     }
 
     fn receive_all_messages(&mut self) -> Vec<(NodeID, bevy_ggrs::ggrs::Message)> {
-        self.rx
-            .try_iter()
-            .filter_map(|UdsPacket { data, id, channel }| {
-                assert_eq!(
-                    channel, self.channel,
-                    "channel mismatch, this is likely a bug in bevy_ggrs_uds"
-                );
-                let Ok(msg) = bincode::deserialize(&data) else {
-                    error!("failed to deserialize uds message from {id:?}");
-                    return None;
-                };
-                Some((id, msg))
-            })
+        self.recv()
+            .into_iter()
+            .filter_map(|(id, data)| Some((id, bincode::deserialize(&data).ok()?)))
             .collect()
     }
 }

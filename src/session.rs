@@ -20,7 +20,11 @@ pub fn uds_packets_recv(uds: NonSend<UdsInstance>, session: Res<UdsSession>) {
     };
     let channel = *channel;
     while let Ok(Some((data, id))) = uds.0.pull_packet() {
-        tx.send(UdsPacket { data, id, channel })
-            .expect("failed to send channels tx");
+        tx.send(UdsPacket {
+            data: data.into(),
+            id,
+            channel,
+        })
+        .expect("failed to send channels tx");
     }
 }
