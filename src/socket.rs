@@ -1,7 +1,6 @@
 use std::ffi::CStr;
 
 use bevy::{ecs::system::Resource, log::error};
-use bevy_ggrs::ggrs::NonBlockingSocket;
 use crossbeam::channel::{Receiver, Sender};
 use ctru::services::uds::{ConnectionType, NetworkScanInfo, NodeID, Uds};
 
@@ -92,25 +91,5 @@ impl UdsSession {
     ) -> ctru::Result<UdsSocket> {
         uds.connect_network(net, psk.to_bytes_with_nul(), conn_ty, channel)?;
         Ok(self.create_socket(channel))
-    }
-}
-
-impl NonBlockingSocket<NodeID> for UdsSocket {
-    fn send_to(&mut self, msg: &bevy_ggrs::ggrs::Message, addr: &NodeID) {
-        let data = match bincode::serialize(msg) {
-            Ok(v) => v,
-            Err(e) => {
-                error!("failed to serialize message for uds addr {addr:?} {msg:?}: {e}");
-                return;
-            }
-        };
-        self.send(*addr, data.into());
-    }
-
-    fn receive_all_messages(&mut self) -> Vec<(NodeID, bevy_ggrs::ggrs::Message)> {
-        self.recv()
-            .into_iter()
-            .filter_map(|(id, data)| Some((id, bincode::deserialize(&data).ok()?)))
-            .collect()
     }
 }
